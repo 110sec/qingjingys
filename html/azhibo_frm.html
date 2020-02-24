@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../css/zb_aui.css" />
+    <link rel="stylesheet" href="../css/zb_base.css">
+    <link rel="stylesheet" type="text/css" href="../css/zb_style.css"/>
+    <style>
+       html,body{background-color: #f2f1f1;  }
+    }
+    </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="game-page">
+
+      <!-- 视频列表 -->
+    <div class="zhibo-list-wrap" id="liveList">
+      <ul class="clearfix" id="div_list">
+      </ul>
+    </div>
+    <!-- 视频列表 end-->
+</body>
+<script type="text/javascript" src="../script/zb_api.js" ></script>
+<script type="text/javascript" src="../script/zb_doT.js"></script>
+
+<script type="text/x-dot-template" id="template">
+{{~ it.pingtai : value : index }}
+    <li onclick="openWin('{{= value. address }}','{{= value. title }}',{{= value. xinimg }},{{= value. Number }})">
+      <div class="video-mask-box">
+        <img src="{{= value. xinimg }}" alt="" class="game-pic">
+      </div>
+
+      <div class="til">{{= value. title }} {{= value. Number }}</div>
+
+    </li>
+{{~}}
+</script>
+<script type="text/javascript">
+  apiready = function(){
+    api.showProgress({
+        title: '加载中...',
+        modal: false
+    });
+    var div_list = $api.byId('div_list');
+    var template = $api.byId('template');
+    api.ajax({
+        url: 'http://api.hclyz.cn:81/mf/json.txt',
+        method: 'get'
+    },function(ret, err){
+        if (ret) {
+          //alert( JSON.stringify( ret ) );
+          var pagefn = doT.template(template.text);
+          div_list.innerHTML = pagefn(ret);
+          api.hideProgress();
+        } else {
+          api.hideProgress();
+            //alert( JSON.stringify( err ) );
+        }
+    });
+    api.setRefreshHeaderInfo({
+        visible: true,
+        loadingImg: 'widget://image/refresh.png',
+        bgColor: '#fff',
+        textColor: '#333',
+        textDown: '下拉刷新...',
+        textUp: '松开刷新...',
+        showTime: true
+    }, function(ret, err){
+      if (err) {
+        api.toast({
+            msg: '加载数据失败',
+            duration: 2000,
+            location: 'middle'
+        });
+        api.refreshHeaderLoadDone();
+      }else {
+        list();
+        api.toast({
+            msg: '刷新成功',
+            duration: 1000,
+            location: 'middle'
+        });
+        api.refreshHeaderLoadDone();
+
+      }
+
+    });
+
+  }
+
+
+  function list(){
+      var div_list = $api.byId('div_list');
+    var template = $api.byId('template');
+    api.ajax({
+        url: 'http://api.hclyz.cn:81/mf/json.txt',
+        method: 'get'
+    },function(ret, err){
+        if (ret) {
+          //alert( JSON.stringify( ret ) );
+          var pagefn = doT.template(template.text);
+          div_list.innerHTML = pagefn(ret);
+          api.hideProgress();
+        } else {
+          api.hideProgress();
+            //alert( JSON.stringify( err ) );
+        }
+    });
+	}
+
+  function openWin(url,xinimg,title,Number){
+
+      api.openWin({
+          name: 'bzhibo_win',
+      pageParam:{
+      url: url,
+      xinimg:xinimg,
+      title:title,
+      Number:Number
+      },
+          url: 'bzhibo_win.html',
+
+      });
+
+  }
+</script>
+</html>
